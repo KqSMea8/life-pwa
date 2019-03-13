@@ -1,29 +1,19 @@
-import * as React from 'react';
-import { ReactComponent as Logo } from './logo.svg';
-import message from '../locale/#{locale}/message.json';
-import './App.css';
+import React from 'react';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+import { Feeds } from './Feeds';
 
-class App extends React.Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <Logo className="App-logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {message.你好}, {message.世界}
-          </a>
-        </header>
-      </div>
-    );
-  }
+// import message from '../locale/#{locale}/message.json';
+import './App.less';
+
+function App() {
+  return (
+    <HashRouter>
+      <Switch>
+        <Route path="/:lang/feed" exact={true} component={Feeds} />
+        <Route path="/:lang/detail">DetailPage</Route>
+      </Switch>
+    </HashRouter>
+  );
 }
 
 export default App;

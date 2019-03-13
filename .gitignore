@@ -266,3 +266,4 @@ yarn-error.log*
 # walle escomplex rule tempdir
 /_cplx_report_
 .bundle-analyzer/
+yarn.lock
