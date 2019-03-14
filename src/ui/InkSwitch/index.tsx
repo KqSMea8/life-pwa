@@ -5,7 +5,7 @@ import { unary } from 'utils/curry';
 import { withDefaultProps } from 'utils/ts';
 
 const Container = styled.div`
-  padding: 31px 10px 0 10px;
+  padding: 11px 10px 0 10px;
   display: flex;
   position: relative;
   align-items: center;

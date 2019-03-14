@@ -17,7 +17,8 @@
     "start": "byted-react-scripts start",
     "build": "byted-react-scripts build",
     "test": "byted-react-scripts test",
-    "eject": "byted-react-scripts eject"
+    "eject": "byted-react-scripts eject",
+    "watch": "byted-react-scripts watch"
   },
   "eslintConfig": {
     "extends": "react-app"

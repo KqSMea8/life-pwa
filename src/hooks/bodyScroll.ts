@@ -1,6 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { throttle, debounce } from 'lodash-es';
 
+const touchEventNames = Object.freeze([
+  'touchstart',
+  'touchend',
+  'touchcancel',
+  'touchmove'
+]);
+const noop = () => undefined;
+
 export function useBodyScroll(options: {
   callback: () => void;
   throttleTime?: number;
@@ -13,7 +21,9 @@ export function useBodyScroll(options: {
   const resetScrollingRef = useRef<{
     resetScrolling: () => void;
   }>({
-    resetScrolling: debounce(() => setIsScrolling(false), throttleTime + 50)
+    resetScrolling: debounce(() => {
+      setIsScrolling(false);
+    }, throttleTime + 100)
   });
 
   const cbEx = useCallback(() => {
@@ -33,8 +43,18 @@ export function useBodyScroll(options: {
   }, [cbEx]);
 
   useEffect(() => {
+    if (isScrolling) {
+      touchEventNames.forEach(n => {
+        document.addEventListener(n, noop, { passive: true });
+      });
+    }
     if (scrollingChangeCallbackRef.current) {
       scrollingChangeCallbackRef.current(isScrolling);
+    }
+    return () => {
+      touchEventNames.forEach(n => {
+        document.removeEventListener(n, noop);
+      });
     }
   }, [isScrolling]);
 
@@ -51,7 +71,7 @@ export function useScrollLoadMore(options: {
   triggerDistanceToBottom?: number;
   loadMore: (pageIndex: number) => Promise<boolean>;
 }) {
-  const { loadMore, throttleTime, triggerDistanceToBottom = 40 } = options;
+  const { loadMore, throttleTime, triggerDistanceToBottom = 100 } = options;
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [loading, setLoading] = useState(false);

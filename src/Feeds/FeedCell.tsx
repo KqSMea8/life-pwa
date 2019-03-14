@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { ReactComponent as Like } from 'src/ui/icon/like.svg';
 import { ICell } from './MasonryFeeds';
-import { ReactComponent as Like } from 'ui/icon/like.svg';
+import 'src/ui/icon/like.less';
 
 const CellWrapper = styled.li`
   margin-top: 10px;
@@ -12,6 +13,23 @@ const CellWrapper = styled.li`
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 4px 0 rgba(190, 198, 200, 0.25);
+`;
+
+const PersonaWrapper = styled.div`
+  overflow: visible;
+  white-space: nowrap;
+  > * {
+    vertical-align: middle;
+  }
+`;
+
+const NamePlacehold = styled.span`
+  display: inline-block;
+  line-height: 18px;
+  width: 18px;
+  font-size: 12px;
+  text-align: center;
+  color: #fff;
 `;
 
 const Content = styled.p`
@@ -30,12 +48,16 @@ const Content = styled.p`
   -webkit-box-orient: vertical;
 `;
 
-const AvatarImage = styled.img`
+const AvatarWrapper = styled.div<{src?: string}>`
+  display: inline-block;
+  background-color: #fff;
+  vertical-align: middle;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  object-fit: cover;
-  object-position: 50% 50%;
+  background-size: cover;
+  background-position: 50%;
+  ${props => props.src ? `background-image: url("${props.src}")` : ''};
 `;
 
 const AuthorWrapper = styled.div`
@@ -53,14 +75,12 @@ const Image = styled.img`
 `;
 
 const FavourCount = styled.div<{ favour?: boolean }>`
-  width: 50px;
+  width: 55px;
   line-height: 22px;
   height: 22px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: ${({favour}) => favour ? '#FF7B7B' : '#d8d8d8'};
-  padding-right: 10px;
+  overflow: visible;
+  color: ${({ favour }) => (favour ? '#FF7B7B' : '#d8d8d8')};
   > * {
     vertical-align: middle;
   }
@@ -68,6 +88,9 @@ const FavourCount = styled.div<{ favour?: boolean }>`
 
 const Text10Px = styled.span`
   display: inline-block;
+  color: #929292;
+  width: 50px;
+  overflow: visible;
   font-size: 20px;
   transform: scale(0.5);
   transform-origin: left center;
@@ -104,16 +127,31 @@ export const FeedCell = React.memo((props: { cell: ICell }) => {
   );
 });
 
+const bgColors = [
+  '#1d1d1d',
+  '#00a300',
+  '#b91d47',
+  '#e773bd',
+  '#1e7145',
+  '#da532c',
+  '#2b5797',
+  '#00aba9'
+];
+
 function Persona(props: { name?: string; avatarUrl?: string }) {
   const { name, avatarUrl } = props;
   if (!name) {
     return null;
   }
+  const c = name.charCodeAt(0) || 0;
+  const bgColor = bgColors[c % bgColors.length];
   return (
-    <div>
-      <AvatarImage src={avatarUrl} />
-      <span style={{ marginLeft: 6 }}>{name}</span>
-    </div>
+    <PersonaWrapper>
+      <AvatarWrapper src={avatarUrl} style={{ backgroundColor: bgColor }}>
+        {!avatarUrl && <NamePlacehold>{name[0]}</NamePlacehold>}
+      </AvatarWrapper>
+      <Text10Px style={{ marginLeft: 6, verticalAlign: 'middle' }}>{name}</Text10Px>
+    </PersonaWrapper>
   );
 }
 
@@ -126,8 +164,15 @@ function Favour(props: { count?: number; favour?: boolean }) {
       favour={favour}
       onClick={() => setFavour(s => !s)}
     >
-      <Like width={12} height={12} />
-      <Text10Px style={{ marginLeft: 7 }}>{count && prefixCountNumber(count)}</Text10Px>
+      <Like
+        className={'like-icon' + (favour ? ' liked' : '')}
+        width={12}
+        height={12}
+        style={{ transition: 'color 0.3s' }}
+      />
+      <Text10Px style={{ marginLeft: 7 }}>
+        {count && prefixCountNumber(count + (favour ? 1 : 0))}
+      </Text10Px>
     </FavourCount>
   );
 }
