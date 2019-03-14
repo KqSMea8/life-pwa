@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Like } from 'src/ui/icon/like.svg';
+import { ReactComponent as Play } from 'src/ui/icon/play.svg';
 import { ICell } from './MasonryFeeds';
 import 'src/ui/icon/like.less';
 
+const PlayStyled = styled(Play)<{ top: number }>`
+  position: absolute;
+  top: ${props => props.top}px;
+  left: 50%;
+  margin-left: -22px;
+  color: #fff;
+`;
+
 const CellWrapper = styled.li`
+  position: relative;
   margin-top: 10px;
   background-color: #fff;
   display: block;
@@ -118,6 +128,9 @@ export const FeedCell = React.memo((props: { cell: ICell }) => {
           style={{ height: cell.imageHeight }}
         />
       </picture>
+      {cell.isVideo && (
+        <PlayStyled height={44} width={44} top={cell.imageHeight / 2 - 22} />
+      )}
       <Content>{cell.content}</Content>
       <AuthorWrapper>
         <Persona name={cell.authorName} avatarUrl={cell.avatarUrl} />
@@ -171,7 +184,9 @@ function Favour(props: { count?: number; favour?: boolean }) {
       onClick={() => setFavour(s => !s)}
     >
       <Like
-        className={'like-icon' + (mountedRef.current && favour ? ' liked-animate' : '')}
+        className={
+          'like-icon' + (mountedRef.current && favour ? ' liked-animate' : '')
+        }
         width={12}
         height={12}
         style={{
