@@ -7,7 +7,7 @@ import { getFeedsData } from 'src/services';
 import { FeedCell } from './FeedCell';
 
 const FeedWrapper = styled.div`
-  padding-top: 64px;
+  padding-top: 44px;
   background-color: rgb(245, 246, 247);
 `;
 

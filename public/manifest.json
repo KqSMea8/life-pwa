@@ -1,6 +1,6 @@
 {
-  "short_name": "L",
-  "name": "L demo",
+  "short_name": "vinna",
+  "name": "💄 vinna 👄",
   "icons": [
     {
       "src": "pics/48.png",
@@ -20,7 +20,7 @@
       "sizes": "152x152"
     }
   ],
-  "start_url": "./index.html#/jp/feeds",
+  "start_url": "/jp/feed",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#ff7b7b",
