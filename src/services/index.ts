@@ -1,10 +1,13 @@
-export async function getFeedsData(pageIndex: number) {
+import { ICell } from "src/Feeds/MasonryFeeds";
+
+export async function getFeedsData(pageIndex: number): Promise<ICell[]> {
   await new Promise(r => setTimeout(r, 100));
   return [1, 1, 1, 1, 1, 1].map((_, idx) => ({
     imageUrl: `/${idx + 1}.jpeg`,
     favour: true,
     // tslint:disable-next-line:no-bitwise
     favourReceivedCount: (Math.random() * 25130) & -1,
+    isVideo: idx === 1,
     authorName: ['IBM', 'Microsoft', 'Tesla', 'Amazon', 'Nvidia', 'Apple'][idx],
     content: 'Os vários produtos muito úteis da Nivea Os vários produtos muito úteis da Nivea',
     ...[{

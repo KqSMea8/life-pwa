@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useScrollLoadMore } from 'src/hooks/bodyScroll';
 import { getFeedsData } from 'src/services';
 import { FeedCell } from './FeedCell';
+import { DelayRender } from 'src/ui/DelayRender';
 
 const FeedWrapper = styled.div`
   padding-top: 44px;
@@ -22,6 +23,7 @@ const Column = styled.ul`
 `;
 
 export interface ICell {
+  isVideo?: boolean;
   imageUrl: string;
   favour?: boolean;
   favourReceivedCount?: number;
@@ -92,7 +94,11 @@ function _MasonryFeeds(
       <FeedWrapper className={isScrolling ? 'scrolling' : undefined}>
         <Column ref={leftRef} style={{ width: localState.current.columnWidth }}>
           {cells.left.map((cell, i) => {
-            return <FeedCell cell={cell} key={i} />;
+            return (
+              <DelayRender transition={true} key={i}>
+                <FeedCell cell={cell} />
+              </DelayRender>
+            );
           })}
         </Column>
         <Column
@@ -100,7 +106,11 @@ function _MasonryFeeds(
           style={{ width: localState.current.columnWidth }}
         >
           {cells.right.map((cell, i) => {
-            return <FeedCell cell={cell} key={i} />;
+            return (
+              <DelayRender transition={true} key={i}>
+                <FeedCell cell={cell} />
+              </DelayRender>
+            );
           })}
         </Column>
       </FeedWrapper>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Like } from 'src/ui/icon/like.svg';
 import { ICell } from './MasonryFeeds';
@@ -48,7 +48,7 @@ const Content = styled.p`
   -webkit-box-orient: vertical;
 `;
 
-const AvatarWrapper = styled.div<{src?: string}>`
+const AvatarWrapper = styled.div<{ src?: string }>`
   display: inline-block;
   background-color: #fff;
   vertical-align: middle;
@@ -57,7 +57,7 @@ const AvatarWrapper = styled.div<{src?: string}>`
   border-radius: 50%;
   background-size: cover;
   background-position: 50%;
-  ${props => props.src ? `background-image: url("${props.src}")` : ''};
+  ${props => (props.src ? `background-image: url("${props.src}")` : '')};
 `;
 
 const AuthorWrapper = styled.div`
@@ -150,7 +150,9 @@ function Persona(props: { name?: string; avatarUrl?: string }) {
       <AvatarWrapper src={avatarUrl} style={{ backgroundColor: bgColor }}>
         {!avatarUrl && <NamePlacehold>{name[0]}</NamePlacehold>}
       </AvatarWrapper>
-      <Text10Px style={{ marginLeft: 6, verticalAlign: 'middle' }}>{name}</Text10Px>
+      <Text10Px style={{ marginLeft: 6, verticalAlign: 'middle' }}>
+        {name}
+      </Text10Px>
     </PersonaWrapper>
   );
 }
@@ -158,6 +160,10 @@ function Persona(props: { name?: string; avatarUrl?: string }) {
 function Favour(props: { count?: number; favour?: boolean }) {
   const { count } = props;
   const [favour, setFavour] = useState(!!props.favour);
+  const mountedRef = useRef(false);
+
+  useEffect(() => void (mountedRef.current = true), []);
+
   return (
     <FavourCount
       className="feed-favour"
@@ -165,10 +171,13 @@ function Favour(props: { count?: number; favour?: boolean }) {
       onClick={() => setFavour(s => !s)}
     >
       <Like
-        className={'like-icon' + (favour ? ' liked' : '')}
+        className={'like-icon' + (mountedRef.current && favour ? ' liked-animate' : '')}
         width={12}
         height={12}
-        style={{ transition: 'color 0.3s' }}
+        style={{
+          transition: 'color 0.3s',
+          color: favour ? '#ff7b7b' : '#d8d8d8'
+        }}
       />
       <Text10Px style={{ marginLeft: 7 }}>
         {count && prefixCountNumber(count + (favour ? 1 : 0))}
