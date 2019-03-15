@@ -1,11 +1,11 @@
-import React from "react";
-import styled from "styled-components";
-import { RouteComponentProps } from "react-router";
-import { NavigationBar } from "ui/NavigationBar";
-import { Swiper } from "ui/Swiper";
-import { User } from "ui/User";
-import { CommentBar } from "ui/CommentBar";
-import { Video } from "ui/Video";
+import React from 'react';
+import styled from 'styled-components';
+import { RouteComponentProps } from 'react-router';
+import { NavigationBar } from 'ui/NavigationBar';
+import { Swiper } from 'ui/Swiper';
+import { User } from 'ui/User';
+import { CommentBar } from 'ui/CommentBar';
+import { Video } from 'ui/Video';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -21,7 +21,7 @@ const Content = styled.div`
 `;
 
 export function Detail(
-  props: RouteComponentProps<{ lang: "en" | "jp" | "pt" }>
+  props: RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
 ) {
   return (
     <Container>

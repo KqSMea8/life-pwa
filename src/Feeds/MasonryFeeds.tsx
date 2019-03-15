@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import produce from 'immer';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,9 +6,11 @@ import { useScrollLoadMore } from 'src/hooks/bodyScroll';
 import { getFeedsData } from 'src/services';
 import { FeedCell } from './FeedCell';
 import { DelayRender } from 'src/ui/DelayRender';
+import { StoreContext } from 'src/store';
 
 const FeedWrapper = styled.div`
   padding-top: 44px;
+  white-space: nowrap;
   background-color: rgb(245, 246, 247);
 `;
 
@@ -37,10 +39,11 @@ export interface ICell {
 function _MasonryFeeds(
   props: RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
 ) {
-  const [cells, setCells] = useState<{ left: ICell[]; right: ICell[] }>({
-    left: [],
-    right: []
-  });
+  const store = useContext(StoreContext);
+  const [cells, setCells] = useState<{ left: ICell[]; right: ICell[] }>(
+    store.getState().feeds[props.match.params.lang]
+  );
+  // const [minHeight, setMinHeight] = useState(0);
   const leftRef = useRef<HTMLUListElement | null>(null);
   const rightRef = useRef<HTMLUListElement | null>(null);
   const localState = useRef<{
@@ -89,9 +92,39 @@ function _MasonryFeeds(
     );
   }, []);
 
+  useEffect(() => {
+    // 离开时记录一下滚动条位置
+    return () => {
+      const lang = props.match.params.lang;
+      const scrollTop =
+        document.body.scrollTop || document.documentElement!.scrollTop;
+      const scrollHeight = document.documentElement!.scrollHeight;
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'instant'
+      } as any);
+      store.setState(s => {
+        s.feeds[lang + 'ScrollTop'] = scrollTop;
+        s.feeds[lang + 'Height'] = scrollHeight;
+      });
+    };
+  }, [props.location.pathname]);
+
+  useEffect(() => {
+    store.setState(s => {
+      s.feeds[props.match.params.lang] = cells;
+    });
+  }, [cells]);
+
   return (
     <>
-      <FeedWrapper className={isScrolling ? 'scrolling' : undefined}>
+      <FeedWrapper
+        style={{
+          minHeight: store.getState().feeds[props.match.params.lang + 'Height']
+        }}
+        className={isScrolling ? 'scrolling' : undefined}
+      >
         <Column ref={leftRef} style={{ width: localState.current.columnWidth }}>
           {cells.left.map((cell, i) => {
             return (

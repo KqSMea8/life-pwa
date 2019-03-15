@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { withRouter, RouteComponentProps } from "react-router";
-import styled from "styled-components";
-import { ReactComponent as Like } from "src/ui/icon/like.svg";
-import { ReactComponent as Play } from "src/ui/icon/play.svg";
-import { ICell } from "./MasonryFeeds";
-import "src/ui/icon/like.less";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router';
+import styled from 'styled-components';
+import { ReactComponent as Like } from 'src/ui/icon/like.svg';
+import { ReactComponent as Play } from 'src/ui/icon/play.svg';
+import { ICell } from './MasonryFeeds';
+import 'src/ui/icon/like.less';
 
-const PlayStyled = styled(Play)<{ top: number }>`
+const PlayStyled = styled(Play)`
   position: absolute;
-  top: ${props => props.top}px;
+  top: 50%;
+  margin-top: -6vw;
   left: 50%;
-  margin-left: -22px;
+  margin-left: -6vw;
   color: #fff;
 `;
 
@@ -44,6 +45,7 @@ const NamePlacehold = styled.span`
 `;
 
 const Content = styled.p`
+  white-space: pre-wrap;
   padding: 9px 10px 0 10px;
   margin: 0;
   font-size: 13px;
@@ -68,7 +70,7 @@ const AvatarWrapper = styled.div<{ src?: string }>`
   border-radius: 50%;
   background-size: cover;
   background-position: 50%;
-  ${props => (props.src ? `background-image: url("${props.src}")` : "")};
+  ${props => (props.src ? `background-image: url("${props.src}")` : '')};
 `;
 
 const AuthorWrapper = styled.div`
@@ -91,7 +93,7 @@ const FavourCount = styled.div<{ favour?: boolean }>`
   height: 22px;
   white-space: nowrap;
   overflow: visible;
-  color: ${({ favour }) => (favour ? "#FF7B7B" : "#d8d8d8")};
+  color: ${({ favour }) => (favour ? '#FF7B7B' : '#d8d8d8')};
   > * {
     vertical-align: middle;
   }
@@ -114,7 +116,7 @@ function isWebp(url: string) {
 export const FeedCell = withRouter(
   React.memo(
     (
-      props: { cell: ICell } & RouteComponentProps<{ lang: "en" | "jp" | "pt" }>
+      props: { cell: ICell } & RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
     ) => {
       const { cell } = props;
 
@@ -124,27 +126,24 @@ export const FeedCell = withRouter(
 
       return (
         <CellWrapper onClick={goDetail}>
-          <picture>
-            {isWebp(cell.imageUrl) && (
-              <source type="image/webp" srcSet={cell.imageUrl} />
-            )}
-            <source
-              type="image/*"
-              srcSet={cell.imageUrl.replace(/\.webp$/, ".jpg")}
-            />
-            <Image
-              width="100%"
-              src={cell.imageUrl}
-              style={{ height: cell.imageHeight }}
-            />
-          </picture>
-          {cell.isVideo && (
-            <PlayStyled
-              height={44}
-              width={44}
-              top={cell.imageHeight / 2 - 22}
-            />
-          )}
+          <div style={{ position: 'relative' }}>
+            <picture>
+              {isWebp(cell.imageUrl) && (
+                <source type="image/webp" srcSet={cell.imageUrl} />
+              )}
+              <source
+                type="image/*"
+                srcSet={cell.imageUrl.replace(/\.webp$/, '.jpg')}
+              />
+              <Image
+                width="100%"
+                src={cell.imageUrl}
+                style={{ height: cell.imageHeight }}
+              />
+            </picture>
+
+            {cell.isVideo && <PlayStyled height="12vw" width="12vw" />}
+          </div>
           <Content>{cell.content}</Content>
           <AuthorWrapper>
             <Persona name={cell.authorName} avatarUrl={cell.avatarUrl} />
@@ -157,14 +156,14 @@ export const FeedCell = withRouter(
 );
 
 const bgColors = [
-  "#1d1d1d",
-  "#00a300",
-  "#b91d47",
-  "#e773bd",
-  "#1e7145",
-  "#da532c",
-  "#2b5797",
-  "#00aba9"
+  '#1d1d1d',
+  '#00a300',
+  '#b91d47',
+  '#e773bd',
+  '#1e7145',
+  '#da532c',
+  '#2b5797',
+  '#00aba9'
 ];
 
 function Persona(props: { name?: string; avatarUrl?: string }) {
@@ -179,7 +178,7 @@ function Persona(props: { name?: string; avatarUrl?: string }) {
       <AvatarWrapper src={avatarUrl} style={{ backgroundColor: bgColor }}>
         {!avatarUrl && <NamePlacehold>{name[0]}</NamePlacehold>}
       </AvatarWrapper>
-      <Text10Px style={{ marginLeft: 6, verticalAlign: "middle" }}>
+      <Text10Px style={{ marginLeft: 6, verticalAlign: 'middle' }}>
         {name}
       </Text10Px>
     </PersonaWrapper>
@@ -201,13 +200,13 @@ function Favour(props: { count?: number; favour?: boolean }) {
     >
       <Like
         className={
-          "like-icon" + (mountedRef.current && favour ? " liked-animate" : "")
+          'like-icon' + (mountedRef.current && favour ? ' liked-animate' : '')
         }
         width={12}
         height={12}
         style={{
-          transition: "color 0.3s",
-          color: favour ? "#ff7b7b" : "#d8d8d8"
+          transition: 'color 0.3s',
+          color: favour ? '#ff7b7b' : '#d8d8d8'
         }}
       />
       <Text10Px style={{ marginLeft: 7 }}>
@@ -220,6 +219,6 @@ function Favour(props: { count?: number; favour?: boolean }) {
 function prefixCountNumber(n: number | string): string {
   const rtn = Number(n) || 0;
   return rtn >= 1e4
-    ? (Math.round(rtn / 1e2) / 10).toFixed(1) + "k"
+    ? (Math.round(rtn / 1e2) / 10).toFixed(1) + 'k'
     : String(rtn);
 }
