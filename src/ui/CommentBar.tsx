@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
-import styld from "styled-components";
+import styled from "styled-components";
 import { ReactComponent as Like } from "src/ui/icon/like.svg";
+import "src/ui/icon/like.less";
 
-const Container = styld.div`
+const Container = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
@@ -14,15 +15,17 @@ const Container = styld.div`
   box-shadow: 0 -2px 6px 0 rgba(53, 60, 70, 0.06);
   padding: 10px 15px;
   box-sizing: border-box;
+  background-color: #fff;
+  z-index: 100;
 `;
 
-const FormWrapper = styld.form`
+const FormWrapper = styled.form`
   flex: 0 1 100%;
   display: block;
   height: 100%;
   margin-right: 20px;
 `;
-const Input = styld.input`
+const Input = styled.input`
   display: block;
   width: 100%;
   height: 100%
@@ -39,20 +42,20 @@ const Input = styld.input`
   }
 `;
 
-const StarWrapper = styld.div`
+const StarWrapper = styled.div`
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const Heart = styld(Like)`
+const Heart = styled(Like)`
   margin-right: 8px;
 `;
 
-const LikeNumber = styld.div`
+const LikeNumber = styled.div`
   color: #555555;
-  font-size: 13px;
+  font-size: 14px;
   min-width: 10px;
 `;
 
@@ -69,7 +72,8 @@ export function CommentBar(props) {
     []
   );
 
-  const onFormSubmit = useCallback(() => {
+  const onFormSubmit = useCallback((event) => {
+    event.preventDefault();
     if (onSubmit && typeof onSubmit === "function") {
       onSubmit(value);
       setValue("");
@@ -78,8 +82,9 @@ export function CommentBar(props) {
 
   return (
     <Container>
-      <FormWrapper onSubmit={onFormSubmit}>
+      <FormWrapper action="#" onSubmit={onFormSubmit}>
         <Input
+          type="text"
           value={value}
           placeholder="Comment......"
           onChange={onInputChange}
@@ -98,10 +103,13 @@ export function CommentBar(props) {
         }
       >
         <Heart
-          className={"like-icon" + (favour ? " liked" : "")}
+          className={"like-icon " + (favour ? "liked-animate" : "")}
           width={22}
           height={22}
-          style={{ transition: "color 0.3s" }}
+          style={{
+            transition: "color 0.3s",
+            color: favour ? "#ff7b7b" : "#d8d8d8"
+          }}
         />
         <LikeNumber>{likeNum}</LikeNumber>
       </StarWrapper>

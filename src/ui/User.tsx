@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -39,15 +39,22 @@ const Follow = styled.div`
   padding: 0 15px;
   font-size: 12px;
   color: #ff7b7b;
+  transition: all 200ms ease;
+  &.unfollow {
+    background-color: rgb(216, 216, 216);
+    color: #fff;
+  }
 `;
 
 export function User(props) {
-  const { url, userName, isFollow, onFollowChange } = props;
+  const { url, userName, onFollowChange } = props;
+  const [isFollow, setIsFollow] = useState(!!props.isFollow);
 
   const onFollowClick = useCallback(() => {
     if (onFollowChange && typeof onFollowChange === "function") {
       onFollowChange(!isFollow);
     }
+    setIsFollow(!isFollow);
   }, [isFollow, onFollowChange]);
 
   return (
@@ -58,7 +65,7 @@ export function User(props) {
         </AvatarContainer>
         <Name>{userName}</Name>
       </LeftContainer>
-      <Follow onClick={onFollowClick}>
+      <Follow onClick={onFollowClick} className={isFollow ? 'unfollow' : ''}>
         {isFollow ? "unfollow" : "follow"}
       </Follow>
     </Container>
