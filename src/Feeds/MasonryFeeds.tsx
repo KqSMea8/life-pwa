@@ -7,9 +7,11 @@ import { getFeedsData } from 'src/services';
 import { FeedCell } from './FeedCell';
 import { DelayRender } from 'src/ui/DelayRender';
 import { StoreContext } from 'src/store';
+import { Loading } from 'src/ui/Loading';
 
 const FeedWrapper = styled.div`
   padding-top: 44px;
+  font-size: 0px;
   white-space: nowrap;
   background-color: rgb(245, 246, 247);
 `;
@@ -40,6 +42,7 @@ function _MasonryFeeds(
   props: RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
 ) {
   const store = useContext(StoreContext);
+  const wrapperDOMRef = useRef<any>();
   const [cells, setCells] = useState<{ left: ICell[]; right: ICell[] }>(
     store.getState().feeds[props.match.params.lang]
   );
@@ -98,7 +101,6 @@ function _MasonryFeeds(
       const lang = props.match.params.lang;
       const scrollTop =
         document.body.scrollTop || document.documentElement!.scrollTop;
-      const scrollHeight = document.documentElement!.scrollHeight;
       window.scrollTo({
         left: 0,
         top: 0,
@@ -106,7 +108,6 @@ function _MasonryFeeds(
       } as any);
       store.setState(s => {
         s.feeds[lang + 'ScrollTop'] = scrollTop;
-        s.feeds[lang + 'Height'] = scrollHeight;
       });
     };
   }, [props.location.pathname]);
@@ -120,12 +121,13 @@ function _MasonryFeeds(
   return (
     <>
       <FeedWrapper
+        ref={wrapperDOMRef}
         style={{
-          minHeight: store.getState().feeds[props.match.params.lang + 'Height']
+          minHeight: store.getState().feeds[props.match.params.lang + 'ScrollTop']
         }}
         className={isScrolling ? 'scrolling' : undefined}
       >
-        <Column ref={leftRef} style={{ width: localState.current.columnWidth }}>
+        <Column key={props.match.params.lang + 'L'} ref={leftRef} style={{ width: localState.current.columnWidth }}>
           {cells.left.map((cell, i) => {
             return (
               <DelayRender transition={true} key={i}>
@@ -135,6 +137,7 @@ function _MasonryFeeds(
           })}
         </Column>
         <Column
+          key={props.match.params.lang + 'R'}
           ref={rightRef}
           style={{ width: localState.current.columnWidth }}
         >
@@ -147,7 +150,7 @@ function _MasonryFeeds(
           })}
         </Column>
       </FeedWrapper>
-      {loading && <h1>loading...</h1>}
+      <Loading loading={loading} style={{ padding: '5px 0' }} />
     </>
   );
 }

@@ -5,6 +5,7 @@ import { ReactComponent as Like } from 'src/ui/icon/like.svg';
 import { ReactComponent as Play } from 'src/ui/icon/play.svg';
 import { ICell } from './MasonryFeeds';
 import 'src/ui/icon/like.less';
+import { useImmerState } from 'src/hooks/immer';
 
 const PlayStyled = styled(Play)`
   position: absolute;
@@ -15,10 +16,12 @@ const PlayStyled = styled(Play)`
   color: #fff;
 `;
 
-const CellWrapper = styled.li`
+const CellWrapper = styled.li<{ active: boolean }>`
   position: relative;
   margin-top: 10px;
   background-color: #fff;
+  ${props => (props.active ? 'transform: scale(0.98)' : '')};
+  transition: transform linear 0.15s;
   display: block;
   width: 100%;
   font-size: 0;
@@ -119,14 +122,40 @@ export const FeedCell = withRouter(
       props: { cell: ICell } & RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
     ) => {
       const { cell } = props;
+      const [state, setState] = useImmerState({ active: false });
 
       const goDetail = useCallback(() => {
         props.history.push(`/${props.match.params.lang}/detail`);
       }, [cell]);
 
+      const handleFocus = useCallback(() => {
+        setState(s => {
+          s.active = true;
+        });
+      }, []);
+
+      const handleBlur = useCallback(() => {
+        setState(s => {
+          s.active = false;
+        });
+      }, []);
+
       return (
-        <CellWrapper onClick={goDetail}>
-          <div style={{ position: 'relative' }}>
+        <CellWrapper
+          onTouchMoveCapture={handleBlur}
+          onMouseMove={handleBlur}
+          onTouchEndCapture={handleBlur}
+          onTouchCancelCapture={handleBlur}
+          onTouchStartCapture={handleFocus}
+          onMouseDownCapture={handleFocus}
+          onMouseUpCapture={handleBlur}
+          active={state.active}
+        >
+          <div
+            style={{ position: 'relative' }}
+            role="button"
+            onClick={goDetail}
+          >
             <picture>
               {isWebp(cell.imageUrl) && (
                 <source type="image/webp" srcSet={cell.imageUrl} />
@@ -144,7 +173,7 @@ export const FeedCell = withRouter(
 
             {cell.isVideo && <PlayStyled height="12vw" width="12vw" />}
           </div>
-          <Content>{cell.content}</Content>
+          <Content onClick={goDetail}>{cell.content}</Content>
           <AuthorWrapper>
             <Persona name={cell.authorName} avatarUrl={cell.avatarUrl} />
             <Favour count={cell.favourReceivedCount} favour={cell.favour} />

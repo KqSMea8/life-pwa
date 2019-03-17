@@ -1,7 +1,7 @@
 import { ICell } from "src/Feeds/MasonryFeeds";
 
 export async function getFeedsData(pageIndex: number): Promise<ICell[]> {
-  await new Promise(r => setTimeout(r, 100));
+  await new Promise(r => setTimeout(r, 300));
   return [1, 1, 1, 1, 1, 1].map((_, idx) => ({
     imageUrl: `/${idx + 1}.jpeg`,
     favour: true,

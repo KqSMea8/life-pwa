@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface SwitchLabelPropsType {
@@ -24,12 +24,15 @@ export function SwitchLabel(props: SwitchLabelPropsType) {
     <Route
       path={to}
       exact={exact}
-      children={({ match }) => {
+      children={({ history, match }) => {
         return (
           <Label isMatch={!!match}>
-            <Link to={to} style={{ textAlign: 'center' }}>
+            <a onClick={e => {
+              e.preventDefault();
+              history.replace(to);
+            }} style={{ textAlign: 'center' }}>
               {children}
-            </Link>
+            </a>
           </Label>
         );
       }}
