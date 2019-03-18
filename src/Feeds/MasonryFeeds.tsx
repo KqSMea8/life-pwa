@@ -3,7 +3,7 @@ import produce from 'immer';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { useScrollLoadMore } from 'src/hooks/bodyScroll';
-import { getFeedsData } from 'src/services';
+import { getFeedsData, ICell } from 'src/services';
 import { FeedCell } from './FeedCell';
 import { DelayRender } from 'src/ui/DelayRender';
 import { StoreContext } from 'src/store';
@@ -26,7 +26,7 @@ const Column = styled.ul`
   margin-left: 9px;
 `;
 
-export interface ICell {
+export interface ICoverData {
   isVideo?: boolean;
   imageUrl: string;
   favour?: boolean;
@@ -36,6 +36,7 @@ export interface ICell {
   imageHeight: number;
   imageWidth: number;
   avatarUrl?: string;
+  oriUrl: string;
 }
 
 function _MasonryFeeds(
@@ -43,9 +44,10 @@ function _MasonryFeeds(
 ) {
   const store = useContext(StoreContext);
   const wrapperDOMRef = useRef<any>();
-  const [cells, setCells] = useState<{ left: ICell[]; right: ICell[] }>(
-    store.getState().feeds[props.match.params.lang]
-  );
+  const [cells, setCells] = useState<{
+    left: ICoverData[];
+    right: ICoverData[];
+  }>(store.getState().feeds[props.match.params.lang]);
   // const [minHeight, setMinHeight] = useState(0);
   const leftRef = useRef<HTMLUListElement | null>(null);
   const rightRef = useRef<HTMLUListElement | null>(null);
@@ -66,26 +68,18 @@ function _MasonryFeeds(
       setCells(
         produce(state => {
           data.forEach((d, i) => {
-            const imgHeight = getImageHeight(
-              d.imageWidth / d.imageHeight,
-              localState.current.columnWidth
-            );
-            const cellHeight = 96 + imgHeight;
-
+            const datum = dataTransfer(d, localState.current.columnWidth);
+            const cellHeight = 96 + datum.imageHeight;
             const t =
               localState.current.leftHeight <= localState.current.rightHeight
                 ? 'left'
                 : 'right';
-            state[t].push({
-              ...d,
-              imageHeight: imgHeight,
-              imageWidth: localState.current.columnWidth
-            });
+            state[t].push(datum);
             localState.current[t + 'Height'] += cellHeight;
           });
         })
       );
-      return pageIndex < 50;
+      return data.length > 0;
     }
   });
 
@@ -123,11 +117,17 @@ function _MasonryFeeds(
       <FeedWrapper
         ref={wrapperDOMRef}
         style={{
-          minHeight: store.getState().feeds[props.match.params.lang + 'ScrollTop']
+          minHeight: store.getState().feeds[
+            props.match.params.lang + 'ScrollTop'
+          ]
         }}
         className={isScrolling ? 'scrolling' : undefined}
       >
-        <Column key={props.match.params.lang + 'L'} ref={leftRef} style={{ width: localState.current.columnWidth }}>
+        <Column
+          key={props.match.params.lang + 'L'}
+          ref={leftRef}
+          style={{ width: localState.current.columnWidth }}
+        >
           {cells.left.map((cell, i) => {
             return (
               <DelayRender transition={true} key={i}>
@@ -162,4 +162,25 @@ function getImageHeight(ratio: number, width: number): number {
     return width;
   }
   return Math.floor(width / ratio);
+}
+
+function dataTransfer(data: ICell, columnWidth: number): ICoverData {
+  const isVideo = Boolean(data.VideoInfos && data.VideoInfos.length);
+  const coverImage = isVideo ? data.VideoInfos![0] : data.ImageInfos![0];
+  const imgHeight = getImageHeight(
+    coverImage.Width / coverImage.Height,
+    columnWidth
+  );
+  return {
+    authorName: data.Author,
+    avatarUrl: data.Avatar ? data.Avatar.Url : undefined,
+    content: [data.Title, data.Content].filter(Boolean).join('\n'),
+    favour: false,
+    favourReceivedCount: data.UpVote || 0,
+    imageUrl: coverImage[isVideo ? 'PosterUrl' : 'Url'],
+    imageHeight: imgHeight,
+    imageWidth: columnWidth,
+    oriUrl: data.Url,
+    isVideo
+  };
 }

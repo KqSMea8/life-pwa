@@ -3,9 +3,9 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import styled from 'styled-components';
 import { ReactComponent as Like } from 'src/ui/icon/like.svg';
 import { ReactComponent as Play } from 'src/ui/icon/play.svg';
-import { ICell } from './MasonryFeeds';
-import 'src/ui/icon/like.less';
 import { useImmerState } from 'src/hooks/immer';
+import { ICoverData } from './MasonryFeeds';
+import 'src/ui/icon/like.less';
 
 const PlayStyled = styled(Play)`
   position: absolute;
@@ -119,7 +119,7 @@ function isWebp(url: string) {
 export const FeedCell = withRouter(
   React.memo(
     (
-      props: { cell: ICell } & RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
+      props: { cell: ICoverData } & RouteComponentProps<{ lang: 'en' | 'jp' | 'pt' }>
     ) => {
       const { cell } = props;
       const [state, setState] = useImmerState({ active: false });

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useImmerState } from 'src/hooks/immer';
-import { ICell } from 'src/Feeds/MasonryFeeds';
+import { ICoverData } from 'src/Feeds/MasonryFeeds';
 import { Draft } from 'immer';
 
 export interface IModel {
   feeds: {
-    jp: { left: ICell[]; right: ICell[] };
-    pt: { left: ICell[]; right: ICell[] };
-    en: { left: ICell[]; right: ICell[] };
+    jp: { left: ICoverData[]; right: ICoverData[] };
+    pt: { left: ICoverData[]; right: ICoverData[] };
+    en: { left: ICoverData[]; right: ICoverData[] };
     jpHeight: number;
     ptHeight: number;
     enHieght: number;
